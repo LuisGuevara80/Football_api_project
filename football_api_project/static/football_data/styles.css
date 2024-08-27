@@ -1,0 +1,200 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Card styles */
+.card {
+    height: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    margin-bottom: 15px;
+}
+
+/* Hover effect for cards */
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Styles for the top part of the card (usually for images) */
+.card-img-top {
+    height: 120px;
+    background-color: #f8f9fa;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+/* Styles for team logos and player photos */
+.team-logo, .player-photo {
+    max-width: 80px;
+    max-height: 80px;
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+/* Specific styles for player photos */
+.player-photo {
+    object-fit: cover;
+    border-radius: 50%; 
+}
+
+/* Styles for the body of the card */
+.card-body {
+    padding: 10px;
+}
+
+/* Styles for card titles */
+.card-title {
+    font-weight: bold;
+    color: #333;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Styles for card text */
+.card-text {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+/* Styles for the search form */
+.search-form {
+    margin-bottom: 20px;
+}
+
+.search-form .form-control {
+    border-radius: 20px 0 0 20px;
+}
+
+.search-form .btn {
+    border-radius: 0 20px 20px 0;
+}
+
+/* Styles for pagination */
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Styles for team detail page */
+.team-logo-detail {
+    max-width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.list-group-item {
+    border: none;
+    padding: 0.5rem 0;
+}
+
+.table {
+    font-size: 0.9rem;
+}
+
+.table a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.table a:hover {
+    text-decoration: underline;
+}
+
+/* Styles for league detail page */
+.league-logo {
+    max-width: 120px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.league-teams .card-img-top {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.league-team-logo {
+    max-width: 60px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* Adjustments for card image top on smaller screens */
+    .card-img-top {
+        height: 100px;
+    }
+    
+    /* Adjustments for team logos and player photos on smaller screens */
+    .team-logo,
+    .player-photo {
+        max-width: 60px;
+        max-height: 60px;
+        width: 60px;
+        height: 60px;
+    }
+
+    /* Smaller font sizes for card title and text on mobile */
+    .card-title {
+        font-size: 0.8rem;
+    }
+
+    .card-text {
+        font-size: 0.7rem;
+    }
+
+    /* Adjustments for buttons on smaller screens */
+    .btn-sm {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    /* Adjustments for league teams on smaller screens */
+    .league-teams .card-img-top {
+        height: 80px;
+    }
+
+    .league-team-logo {
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    /* Smaller team logo on detail page for mobile */
+    .team-logo-detail {
+        max-width: 100px;
+    }
+
+    /* Adjustments for fixture display on mobile */
+    .fixture-teams {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .team {
+        width: 100%;
+        text-align: left;
+        padding: 3px 0;
+    }
+
+    .home-team, .away-team {
+        padding: 3px 0;
+    }
+
+    .fixture-score {
+        align-self: flex-start;
+        margin: 5px 0;
+    }
+}

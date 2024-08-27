@@ -1,0 +1,88 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block title %}{{ team.name }} - Team Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Team logo and name section -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <!-- Use custom tag to display team logo or default image -->
+                    <img src="{% default_static team.logo_url 'img/default_team_v3.png' %}" alt="{{ team.name }}" class="img-fluid mb-3 team-logo-detail">
+                    <h1 class="card-title">{{ team.name }}</h1>
+                </div>
+            </div>
+        </div>
+        <!-- Team details section -->
+        <div class="col-md-8">
+            <table class="table">
+                <tbody>
+                    <!-- Display various team details -->
+                    <tr>
+                        <th>League</th>
+                        <td>{{ league.name|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Country</th>
+                        <td>{{ team.country.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>City</th>
+                        <td>{{ team.venue.city|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Founded</th>
+                        <td>{{ team.founded|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Venue</th>
+                        <td>{{ team.venue.name|default:"N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Capacity</th>
+                        <td>{{ team.venue.capacity|default:"N/A" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Players section -->
+    <h2 class="mt-4 mb-3">Players</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Nationality</th>
+                    <th>Height</th>
+                    <th>Weight</th>
+                    <th>Birth date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <!-- Display each player's details -->
+                <tr>
+                    <td><a href="{% url 'player_detail' player.id %}">{{ player.name }}</a></td>
+                    <td>{{ player.age|default:"N/A" }}</td>
+                    <td>{{ player.nationality|default:"N/A" }}</td>
+                    <td>{{ player.height|default:"N/A" }}</td>
+                    <td>{{ player.weight|default:"N/A" }}</td>
+                    <td>{{ player.birth_date|default:"N/A" }}</td>
+                </tr>
+                {% empty %}
+                <!-- Display message if no players found -->
+                <tr>
+                    <td colspan="5" class="text-center">No players found for this team.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block title %}{{ player.name }} - Player Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Player Photo Section -->
+        <div class="col-md-4">
+            <img src="{% default_static player.photo_url 'img/default_player.png' %}" alt="{{ player.name }}" class="img-fluid rounded-circle mb-3">
+        </div>
+        <!-- Player Details Section -->
+        <div class="col-md-8">
+            <!-- Player Name -->
+            <h1>{{ player.name }}</h1>
+            <!-- Player Information Table -->
+            <table class="table">
+                <tbody>
+                    <!-- Full Name -->
+                    <tr>
+                        <th>Full Name</th>
+                        <td>{{ player.firstname }} {{ player.lastname }}</td>
+                    </tr>
+                    <!-- Age -->
+                    <tr>
+                        <th>Age</th>
+                        <td>{{ player.age }}</td>
+                    </tr>
+                    <!-- Date of Birth -->
+                    <tr>
+                        <th>Date of Birth</th>
+                        <td>{{ player.birth_date|date:"F d, Y" }}</td>
+                    </tr>
+                    <!-- Nationality -->
+                    <tr>
+                        <th>Nationality</th>
+                        <td>{{ player.nationality }}</td>
+                    </tr>
+                    <!-- Height -->
+                    <tr>
+                        <th>Height</th>
+                        <td>{{ player.height }}</td>
+                    </tr>
+                    <!-- Weight -->
+                    <tr>
+                        <th>Weight</th>
+                        <td>{{ player.weight }}</td>
+                    </tr>
+                    <!-- Current Team -->
+                    <tr>
+                        <th>Team</th>
+                        <td>{{ player.team.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "football_data/base.html" %}
+{% load static %}
+
+{% block title %}Fixtures - Football Data{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Fixtures</h1>
+
+<!-- Fixture filtering form -->
+<form class="mb-4" method="get">
+    <div class="row g-3">
+        <!-- Date selector -->
+        <div class="col-md-4">
+            <input type="date" class="form-control" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+        </div>
+        <!-- League selector -->
+        <div class="col-md-6">
+            <select class="form-select" name="league">
+                <option value="">All Leagues</option>
+                {% for league in leagues %}
+                    <option value="{{ league.id }}" {% if league.id|stringformat:"s" == selected_league %}selected{% endif %}>{{ league.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Filter button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>
+
+<!-- Fixtures display -->
+<div class="row">
+    {% for fixture in fixtures %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <!-- Fixture header: League and round -->
+            <div class="card-header">
+                <strong>{{ fixture.league.name }}</strong> - {{ fixture.formatted_round }}
+            </div>
+            <div class="card-body">
+                <!-- Teams and score -->
+                <h5 class="card-title text-center">
+                    {{ fixture.team_home.name }} 
+                    <span class="badge {% if fixture.status_short == 'FT' %}bg-secondary{% elif fixture.status_short == '1H' or fixture.status_short == '2H' %}bg-success{% else %}bg-primary{% endif %}">
+                        {% if fixture.status_short == 'NS' %}
+                            vs
+                        {% else %}
+                            {{ fixture.goals_home }} - {{ fixture.goals_away }}
+                        {% endif %}
+                    </span> 
+                    {{ fixture.team_away.name }}
+                </h5>
+                <!-- Fixture details -->
+                <p class="card-text">
+                    <small class="text-muted">
+                        <strong>Date:</strong> {{ fixture.date|date:"F d, Y H:i" }}<br>
+                        <strong>Referee:</strong> {{ fixture.referee|default:"TBA" }}<br>
+                        <strong>Status:</strong> 
+                        {% if fixture.status_short == 'FT' %}
+                            Full Time
+                        {% elif fixture.status_short == 'NS' %}
+                            Not Started
+                        {% elif fixture.status_short == '1H' %}
+                            First Half
+                        {% elif fixture.status_short == '2H' %}
+                            Second Half
+                        {% elif fixture.status_short == 'HT' %}
+                            Half Time
+                        {% else %}
+                            {{ fixture.status_long }}
+                        {% endif %}
+                    </small>
+                </p>
+                <!-- Display elapsed time for ongoing matches -->
+                {% if fixture.status_short != 'NS' and fixture.status_short != 'FT' %}
+                    <div class="text-center mt-3">
+                        <span class="badge bg-info">{{ fixture.status_elapsed }}'</span>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Fixture footer: Season information -->
+            <div class="card-footer text-muted text-center">
+                {{ fixture.season.year }} Season
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <!-- Displayed when no fixtures are found -->
+    <div class="col-12">
+        <p>No fixtures found for the selected criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

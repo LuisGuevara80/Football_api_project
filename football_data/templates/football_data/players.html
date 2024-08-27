@@ -1,0 +1,126 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block title %}Players - Football Data{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Players</h1>
+
+<!-- Search and filter form -->
+<form class="mb-4" method="get">
+    <div class="row g-3">
+        <!-- Player search input -->
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search players" name="search" value="{{ search_query }}">
+        </div>
+        <!-- League filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="league" id="league-select">
+                <option value="">All Leagues</option>
+                {% for league in leagues %}
+                    <option value="{{ league.id }}" {% if league.id|stringformat:"s" == selected_league %}selected{% endif %}>{{ league.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Team filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="team" id="team-select">
+                <option value="">All Teams</option>
+                {% for team in teams %}
+                    <option value="{{ team.id }}" {% if team.id|stringformat:"s" == selected_team %}selected{% endif %}>{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <!-- Search button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </div>
+</form>
+
+<!-- Players grid -->
+<div class="row row-cols-2 row-cols-md-4 g-4" id="players-container">
+    {% for player in page_obj %}
+    <div class="col player-card">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <img src="{% default_static player.photo_url 'img/default_player.png' %}" class="player-photo mb-2" alt="{{ player.name }}">
+                <h6 class="card-title">{{ player.name }}</h6>
+                <p class="card-text small">Team: {{ player.team.name }}</p>
+                <a href="{% url 'player_detail' player.id %}" class="btn btn-primary btn-sm">View details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No players found.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Loading spinner for infinite scroll -->
+<div id="loading" class="text-center mt-4" style="display: none;">
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentPage = 1;
+let loading = false;
+
+// Function to load more players
+function loadMorePlayers() {
+    if (loading) return;
+    loading = true;
+    currentPage++;
+    
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set('page', currentPage);
+    
+    fetch(`${window.location.pathname}?${searchParams.toString()}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById('players-container');
+        data.players.forEach(player => {
+            const playerElement = `
+                <div class="col player-card">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <img src="${player.photo_url}" class="player-photo mb-2" alt="${player.name}">
+                            <h6 class="card-title">${player.name}</h6>
+                            <p class="card-text small">Team: ${player.team}</p>
+                            <a href="/players/${player.id}/" class="btn btn-primary btn-sm">View details</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', playerElement);
+        });
+        loading = false;
+        if (!data.has_next) {
+            window.removeEventListener('scroll', checkScroll);
+        }
+    });
+}
+
+// Function to check scroll position and load more players if needed
+function checkScroll() {
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    if (scrollPosition >= pageHeight - 500 && !loading) {
+        loadMorePlayers();
+    }
+}
+
+// Add scroll event listener for infinite scroll
+window.addEventListener('scroll', checkScroll);
+</script>
+{% endblock %}

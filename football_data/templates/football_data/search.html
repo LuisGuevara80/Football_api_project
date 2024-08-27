@@ -1,0 +1,133 @@
+{% extends "football_data/base.html" %}
+
+{% block title %}Resultados de búsqueda - Football Data{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Resultados de búsqueda para "{{ query }}"</h1>
+
+<!-- Search and filter form -->
+<form class="mb-4" method="get">
+    <div class="row g-3">
+        <!-- Search input field -->
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Buscar" name="search" value="{{ search_query }}">
+        </div>
+        
+        <!-- League filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="league">
+                <option value="">Todas las Ligas</option>
+                {% for league in leagues %}
+                    <option value="{{ league.id }}" {% if league.id|stringformat:"s" == selected_league %}selected{% endif %}>{{ league.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Team filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="team">
+                <option value="">Todos los Equipos</option>
+                {% for team in teams %}
+                    <option value="{{ team.id }}" {% if team.id|stringformat:"s" == selected_team %}selected{% endif %}>{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- Filter submit button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+<!-- Navigation tabs for different search categories -->
+<ul class="nav nav-tabs" id="searchTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button" role="tab">Equipos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="players-tab" data-bs-toggle="tab" data-bs-target="#players" type="button" role="tab">Jugadores</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="leagues-tab" data-bs-toggle="tab" data-bs-target="#leagues" type="button" role="tab">Ligas</button>
+    </li>
+</ul>
+
+<!-- Tab content container -->
+<div class="tab-content mt-3" id="searchTabContent">
+    <!-- Teams tab -->
+    <div class="tab-pane fade show active" id="teams" role="tabpanel">
+        <h2>Equipos</h2>
+        {% if teams %}
+            <div class="row">
+                {% for team in teams %}
+                <!-- Team card -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <img src="{{ team.logo_url }}" class="card-img-top" alt="{{ team.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ team.name }}</h5>
+                            <p class="card-text">Liga: {{ team.league.name }}</p>
+                            <a href="{% url 'team_detail' team.id %}" class="btn btn-primary">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron equipos.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Players tab -->
+    <div class="tab-pane fade" id="players" role="tabpanel">
+        <h2>Jugadores</h2>
+        {% if players %}
+            <div class="row">
+                {% for player in players %}
+                <!-- Player card -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <img src="{{ player.photo_url }}" class="card-img-top" alt="{{ player.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ player.name }}</h5>
+                            <p class="card-text">
+                                Equipo: {{ player.team.name }}<br>
+                                Posición: {{ player.position }}
+                            </p>
+                            <a href="{% url 'player_detail' player.id %}" class="btn btn-primary">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron jugadores.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Leagues tab -->
+    <div class="tab-pane fade" id="leagues" role="tabpanel">
+        <h2>Ligas</h2>
+        {% if leagues %}
+            <div class="row">
+                {% for league in leagues %}
+                <!-- League card -->
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="{{ league.logo_url }}" class="card-img-top" alt="{{ league.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ league.name }}</h5>
+                            <p class="card-text">País: {{ league.country }}</p>
+                            <a href="{% url 'league_detail' league.id %}" class="btn btn-primary">Ver detalles</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No se encontraron ligas.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

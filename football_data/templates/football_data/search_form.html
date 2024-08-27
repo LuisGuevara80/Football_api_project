@@ -1,0 +1,40 @@
+<!-- Search and filter form -->
+<form class="mb-4" method="get">
+    <div class="row g-3">
+        {% if show_search %}
+        <!-- Search input field -->
+        <div class="col-md-4">
+            <input type="text" class="form-control" placeholder="Search" name="search" value="{{ search_query }}">
+        </div>
+        {% endif %}
+        
+        {% if show_league_filter %}
+        <!-- League filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="league">
+                <option value="">All Leagues</option>
+                {% for league in leagues %}
+                    <option value="{{ league.id }}" {% if league.id|stringformat:"s" == selected_league %}selected{% endif %}>{{ league.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        
+        {% if show_team_filter %}
+        <!-- Team filter dropdown -->
+        <div class="col-md-3">
+            <select class="form-select" name="team">
+                <option value="">All Teams</option>
+                {% for team in teams %}
+                    <option value="{{ team.id }}" {% if team.id|stringformat:"s" == selected_team %}selected{% endif %}>{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        
+        <!-- Filter submit button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+</form>

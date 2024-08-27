@@ -1,0 +1,53 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block title %}Home - Football Data{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Welcome to Football Data</h1>
+
+<div class="row">
+    <!-- Top Leagues Section -->
+    <div class="col-md-6">
+        <h2>Top Leagues</h2>
+        <ul class="list-group">
+            {% for league in leagues %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <!-- League logo with fallback to default image -->
+                    <img src="{% default_static league.logo_url 'img/default_league.png' %}" alt="{{ league.name }}" class="home-page-logo me-3">
+                    <span>{{ league.name }}</span>
+                </div>
+                <!-- Link to league details -->
+                <a href="{% url 'league_detail' league.id %}" class="btn btn-sm btn-primary">View</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Latest Fixtures Section -->
+    <div class="col-md-6">
+        <h2>Latest Fixtures</h2>
+        <ul class="list-group">
+            {% for fixture in latest_fixtures %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>{{ fixture.team_home.name }}</span>
+                    <!-- Display score for past matches, 'vs' for upcoming ones -->
+                    <span class="badge bg-secondary">
+                        {% if fixture.date < now %}
+                            {{ fixture.goals_home }} - {{ fixture.goals_away }}
+                        {% else %}
+                            vs
+                        {% endif %}
+                    </span>
+                    <span>{{ fixture.team_away.name }}</span>
+                </div>
+                <!-- Fixture date and time -->
+                <small class="text-muted d-block text-center">{{ fixture.date|date:"d M Y H:i" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

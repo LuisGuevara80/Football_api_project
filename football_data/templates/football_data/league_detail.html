@@ -1,0 +1,48 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container">
+    <!-- League Name Header -->
+    <h1 class="text-center mb-4">{{ league.name }}</h1>
+    
+    <!-- League Information Section -->
+    <div class="row justify-content-center">
+        <div class="col-md-4 text-center">
+            <!-- League Logo -->
+            <img src="{{ league.logo_url }}" alt="{{ league.name }}" class="img-fluid mb-3 league-logo">
+            <h3>Information</h3>
+            <!-- League Details -->
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Country:</strong> {{ league.country }}</li>
+                <li class="list-group-item"><strong>Number of teams:</strong> {{ teams.count }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Teams Section -->
+    <h3 class="text-center mt-4">Teams</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+        {% for team in teams %}
+        <div class="col">
+            <div class="card h-100">
+                <!-- Team Logo -->
+                <div class="card-img-top d-flex align-items-center justify-content-center">
+                    <img src="{{ team.logo_url }}" alt="{{ team.name }}" class="team-logo">
+                </div>
+                <!-- Team Name and Link to Details -->
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ team.name }}</h5>
+                    <a href="{% url 'team_detail' team.id %}" class="btn btn-primary">View details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Displayed when no teams are found -->
+        <div class="col-12 text-center">
+            <p>No teams found for this league.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

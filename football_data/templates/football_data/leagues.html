@@ -1,0 +1,46 @@
+{% extends "football_data/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Title -->
+    <h1 class="text-center mb-4">Leagues</h1>
+
+    <!-- Search Form -->
+    <form class="mb-4 search-form" method="get">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search leagues" name="search" value="{{ search_query }}">
+                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Leagues Grid -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+        {% for league in leagues %}
+        <div class="col">
+            <div class="card h-100">
+                <!-- League Logo -->
+                <div class="card-img-top d-flex align-items-center justify-content-center">
+                    <img src="{% default_static league.logo_url 'img/default_league.png' %}" alt="{{ league.name }}" class="league-logo">
+                </div>
+                <!-- League Information -->
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ league.name }}</h5>
+                    <p class="card-text">Country: {{ league.country.name }}</p>
+                    <a href="{% url 'league_detail' league.id %}" class="btn btn-primary">View details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Displayed when no leagues are found -->
+        <div class="col-12 text-center">
+            <p>No leagues found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
