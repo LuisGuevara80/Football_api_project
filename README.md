@@ -25,12 +25,19 @@ A Django web application providing up-to-date football information on leagues, t
 - Regular data updates via API
 
 ## Setup
-1. Clone the repo
-2. Create and activate a virtual environment
-3. Install dependencies: `pip install -r requirements.txt`
-4. Set up `.env` file with your API key
-5. Run migrations: `python manage.py migrate`
-6. Start server: `python manage.py runserver`
+1. Clone the repo: `git clone [repository-url]`
+2. Navigate to the project directory: `cd [project-name]`
+3. Create a virtual environment: `python -m venv venv`
+4. Activate the virtual environment:
+   - Windows: `venv\Scripts\activate`
+   - macOS/Linux: `source venv/bin/activate`
+5. Install dependencies: `pip install -r requirements.txt`
+6. Create a `.env` file in the project root and add necessary environment variables
+7. Create migrations: `python manage.py makemigrations`
+8. Apply migrations: `python manage.py migrate`
+9. Create a superuser: `python manage.py createsuperuser`
+10. [Optional for development] Collect static files: `python manage.py collectstatic`
+11. Start the development server: `python manage.py runserver`
 
 ## Usage
 Visit `http://localhost:8000` to use the application.
