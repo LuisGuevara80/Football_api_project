@@ -40,5 +40,5 @@ A Django web application providing up-to-date football information on leagues, t
 11. Start the development server: `python manage.py runserver`
 
 ## Usage
-Visit `http://localhost:8000` to use the application.
-Update data: `python manage.py update_football_data`
+- Visit `http://localhost:8000` to use the application.
+- Update data: `python manage.py update_football_data`
