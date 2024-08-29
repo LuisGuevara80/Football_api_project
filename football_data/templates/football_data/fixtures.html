@@ -67,13 +67,15 @@
                             Second Half
                         {% elif fixture.status_short == 'HT' %}
                             Half Time
+                        {% elif fixture.status_short == 'PST' %}
+                            Postponed
                         {% else %}
                             {{ fixture.status_long }}
                         {% endif %}
                     </small>
                 </p>
                 <!-- Display elapsed time for ongoing matches -->
-                {% if fixture.status_short != 'NS' and fixture.status_short != 'FT' %}
+                {% if fixture.status_short != 'NS' and fixture.status_short != 'FT' and fixture.status_short != 'PST' and fixture.status_elapsed %}
                     <div class="text-center mt-3">
                         <span class="badge bg-info">{{ fixture.status_elapsed }}'</span>
                     </div>
