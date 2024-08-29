@@ -8,15 +8,15 @@
 <h1 class="mb-4">Teams</h1>
 
 <!-- Search and filter form -->
-<form class="mb-4 search-form" method="get">
+<form class="mb-4 search-form" method="get" id="searchForm">
     <div class="row g-3">
-        <!-- Search input for team names -->
+        <!-- Team name search input -->
         <div class="col-md-6">
             <input type="text" class="form-control" placeholder="Search teams" name="search" value="{{ search_query }}">
         </div>
-        <!-- League filter dropdown -->
+        <!-- League selection dropdown -->
         <div class="col-md-4">
-            <select class="form-select" name="league">
+            <select class="form-select" name="league" id="leagueSelect">
                 <option value="">All Leagues</option>
                 {% for league in leagues %}
                     <option value="{{ league.id }}" {% if league.id|stringformat:"s" == selected_league %}selected{% endif %}>{{ league.name }}</option>
@@ -33,14 +33,11 @@
 <!-- Container for team cards -->
 <div id="teams-container" class="row row-cols-1 row-cols-md-3 g-4">
     {% for team in page_obj %}
-    <!-- Individual team card -->
     <div class="col team-card">
         <div class="card h-100">
-            <!-- Team logo -->
             <div class="card-img-top d-flex align-items-center justify-content-center">
                 <img src="{{ team.logo_url|default:default_logo_url }}" alt="{{ team.name }}" class="team-logo">
             </div>
-            <!-- Team information -->
             <div class="card-body text-center">
                 <h5 class="card-title">{{ team.name }}</h5>
                 <p class="card-text">
@@ -52,7 +49,6 @@
         </div>
     </div>
     {% empty %}
-    <!-- Displayed when no teams are found -->
     <div class="col-12">
         <p>No teams found.</p>
     </div>
@@ -65,72 +61,93 @@
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// JavaScript for infinite scrolling functionality
-let currentPage = 1;
-let loading = false;
-const defaultLogoUrl = "{% static 'img/default_team_v3.png' %}";
+    // Initial data passed from the backend
+    const initialData = {
+        selectedLeague: "{{ selected_league|escapejs }}",
+        defaultLogoUrl: "{% static 'img/default_team_v3.png' %}",
+        apiUrl: "{% url 'teams' %}"
+    };
 
-// Function to load more teams
-function loadMoreTeams() {
-    if (loading) return;
-    loading = true;
-    currentPage++;
-    
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set('page', currentPage);
-    
-    // Fetch next page of teams
-    fetch(`${window.location.pathname}?${searchParams.toString()}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const container = document.getElementById('teams-container');
-        // Add new team cards to the container
-        data.teams.forEach(team => {
-            const teamElement = `
-                <div class="col team-card">
-                    <div class="card h-100">
-                        <div class="card-img-top d-flex align-items-center justify-content-center">
-                            <img src="${team.logo_url}" alt="${team.name}" class="team-logo" onerror="this.src='${defaultLogoUrl}';">
-                        </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title">${team.name}</h5>
-                            <p class="card-text">
-                                League: ${team.league}<br>
-                                Country: ${team.country}
-                            </p>
-                            <a href="/teams/${team.id}/" class="btn btn-primary">View details</a>
+    let currentPage = 1;
+    let loading = false;
+    const isFiltered = !!initialData.selectedLeague || "{{ search_query }}";
+
+    // Function to load more teams for infinite scroll
+    function loadMoreTeams() {
+        if (loading || isFiltered) return;
+        loading = true;
+        currentPage++;
+        
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('page', currentPage);
+        
+        fetch(`${initialData.apiUrl}?${searchParams.toString()}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('teams-container');
+            data.teams.forEach(team => {
+                const teamElement = `
+                    <div class="col team-card">
+                        <div class="card h-100">
+                            <div class="card-img-top d-flex align-items-center justify-content-center">
+                                <img src="${team.logo_url || initialData.defaultLogoUrl}" alt="${team.name}" class="team-logo">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">${team.name}</h5>
+                                <p class="card-text">
+                                    League: ${team.league}<br>
+                                    Country: ${team.country}
+                                </p>
+                                <a href="/teams/${team.id}/" class="btn btn-primary">View details</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', teamElement);
+                `;
+                container.insertAdjacentHTML('beforeend', teamElement);
+            });
+            loading = false;
+            if (!data.has_next) {
+                window.removeEventListener('scroll', checkScroll);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading more teams:', error);
+            loading = false;
         });
-        loading = false;
-        // Remove scroll event listener if no more pages
-        if (!data.has_next) {
-            window.removeEventListener('scroll', checkScroll);
-        }
-    });
-}
-
-// Function to check scroll position and load more teams if needed
-function checkScroll() {
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const pageHeight = document.documentElement.scrollHeight;
-    if (scrollPosition >= pageHeight - 500 && !loading) {
-        loadMoreTeams();
     }
-}
 
-// Add scroll event listener for infinite scrolling
-window.addEventListener('scroll', checkScroll);
+    // Function to check scroll position and load more teams if needed
+    function checkScroll() {
+        if (isFiltered) return;
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const pageHeight = document.documentElement.scrollHeight;
+        if (scrollPosition >= pageHeight - 500 && !loading) {
+            loadMoreTeams();
+        }
+    }
+
+    // Add scroll event listener for infinite scrolling if not filtered
+    if (!isFiltered) {
+        window.addEventListener('scroll', checkScroll);
+    }
+
+    // Event listener for the search form submission
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        this.submit(); // Submit the form
+    });
+
+    // Event listener for league selection change
+    document.getElementById('leagueSelect').addEventListener('change', function() {
+    });
 </script>
 {% endblock %}
